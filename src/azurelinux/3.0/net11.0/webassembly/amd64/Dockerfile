@@ -1,16 +1,21 @@
-FROM mcr.microsoft.com/dotnet-buildtools/prereqs:azurelinux-3.0-net11.0-cross-amd64
+FROM mcr.microsoft.com/dotnet-buildtools/prereqs:azurelinux-4.0-net11.0-cross-amd64
 
 # Dependencies for WebAssembly build
-RUN tdnf update -y \
-    && tdnf install -y \
+RUN dnf update -y \
+    && dnf install -y \
         # WebAssembly build dependencies
         which \
+        gzip \
         nodejs24 \
         nodejs24-npm \
         pigz \
         python3 \
         libxml2 \
-        unzip
+        unzip \
+        xz \
+    && dnf clean all \
+    && ln -sf /usr/bin/node-24 /usr/bin/node \
+    && ln -sf /usr/bin/npm-24 /usr/bin/npm
 
 # WebAssembly build needs typescript
 RUN npm i -g typescript
