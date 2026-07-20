@@ -1,8 +1,9 @@
-FROM mcr.microsoft.com/azurelinux/base/core:3.0
-RUN tdnf update -y && \
-    tdnf install -y \
-        awk \
-        build-essential \
+FROM mcr.microsoft.com/azurelinux-beta/base/core:4.0
+RUN dnf update -y && \
+    dnf install -y \
+        gawk \
+        gcc \
+        make \
         ca-certificates \
         git \
         icu \
@@ -15,5 +16,5 @@ RUN tdnf update -y && \
         util-linux \
         # Provides sudo
         sudo \
-    && tdnf clean all \
+    && dnf clean all \
     && gem install fpm

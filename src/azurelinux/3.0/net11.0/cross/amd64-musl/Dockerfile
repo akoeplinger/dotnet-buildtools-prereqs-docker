@@ -1,6 +1,6 @@
 ARG ROOTFS_DIR=/crossrootfs/x64
 
-FROM mcr.microsoft.com/dotnet-buildtools/prereqs:azurelinux-3.0-net11.0-crossdeps-builder-amd64 AS builder
+FROM mcr.microsoft.com/dotnet-buildtools/prereqs:azurelinux-4.0-net11.0-crossdeps-builder-amd64 AS builder
 ARG ROOTFS_DIR
 
 RUN SSL_CERT_FILE=/etc/pki/tls/certs/ca-bundle.crt /scripts/eng/common/cross/build-rootfs.sh x64 alpine3.17 --skipunmount --skipemulation
@@ -34,7 +34,7 @@ RUN TARGET_TRIPLE="x86_64-alpine-linux-musl" && \
     cmake --build runtimes -j $(getconf _NPROCESSORS_ONLN) && \
     cmake --install runtimes --prefix "$ROOTFS_DIR/usr"
 
-FROM mcr.microsoft.com/dotnet-buildtools/prereqs:azurelinux-3.0-net11.0-crossdeps-llvm-amd64
+FROM mcr.microsoft.com/dotnet-buildtools/prereqs:azurelinux-4.0-net11.0-crossdeps-llvm-amd64
 ARG ROOTFS_DIR
 
 COPY --from=builder $ROOTFS_DIR $ROOTFS_DIR

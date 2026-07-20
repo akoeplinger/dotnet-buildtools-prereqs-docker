@@ -1,6 +1,6 @@
 ARG ROOTFS_DIR=/crossrootfs/x64
 
-FROM mcr.microsoft.com/dotnet-buildtools/prereqs:azurelinux-3.0-net11.0-crossdeps-builder-amd64 AS builder
+FROM mcr.microsoft.com/dotnet-buildtools/prereqs:azurelinux-4.0-net11.0-crossdeps-builder-amd64 AS builder
 ARG ROOTFS_DIR
 
 # Use Ubuntu Bionic as the base image for the rootfs
@@ -35,7 +35,7 @@ RUN TARGET_TRIPLE="x86_64-linux-gnu" && \
         -DLIBCXX_CXX_ABI_INCLUDE_PATHS="$CPP_INCLUDES;$TRIPLET_INCLUDES" \
         -DCOMPILER_RT_CXX_LIBRARY="libcxx" \
         -DCOMPILER_RT_STATIC_CXX_LIBRARY=ON \
-        -DSANITIZER_CXX_ABI_LIBNAME="libstdc++" \ 
+        -DSANITIZER_CXX_ABI_LIBNAME="libstdc++" \
         -DCOMPILER_RT_BUILD_MEMPROF=OFF \
         # The libfuzzer build in LLVM doesn't correctly forward the required CMake properties to the "fuzzed libc++" build
         # so skip it here.
@@ -47,7 +47,7 @@ RUN TARGET_TRIPLE="x86_64-linux-gnu" && \
     cmake --build runtimes -j && \
     cmake --install runtimes --prefix "$ROOTFS_DIR/usr"
 
-FROM mcr.microsoft.com/dotnet-buildtools/prereqs:azurelinux-3.0-net11.0-crossdeps-llvm-amd64
+FROM mcr.microsoft.com/dotnet-buildtools/prereqs:azurelinux-4.0-net11.0-crossdeps-llvm-amd64
 ARG ROOTFS_DIR
 
 COPY --from=builder /usr/local/lib/clang /usr/local/lib/clang

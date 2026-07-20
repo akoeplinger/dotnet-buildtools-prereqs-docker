@@ -1,13 +1,15 @@
-FROM mcr.microsoft.com/azurelinux/base/core:3.0 AS builder
+FROM mcr.microsoft.com/azurelinux-beta/base/core:4.0 AS builder
 
-RUN tdnf update -y && \
-    tdnf install -y \
+RUN dnf update -y && \
+    dnf install -y \
         # Common dependencies
         ca-certificates \
         git \
+        gnupg2 \
         tar \
         util-linux \
-        wget \
+        wget2-wget \
+        xz \
         # LLVM Build tools
         binutils \
         clang \
@@ -18,7 +20,8 @@ RUN tdnf update -y && \
         glibc-devel \
         kernel-headers \
         texinfo \
-        zlib-devel
+        zlib-ng-compat-devel \
+    && dnf clean all
 
 # Steps copied (mostly, changed target archs) from crossdeps Dockerfile: https://github.com/dotnet/dotnet-buildtools-prereqs-docker/blob/main/src/azurelinux/3.0/net11.0/crossdeps-builder/amd64/Dockerfile
 # 1. Obtain signing keys used to sign llvm sources
@@ -51,16 +54,17 @@ RUN mkdir llvm-project.src && \
     make install
 
 
-FROM mcr.microsoft.com/azurelinux/base/core:3.0
+FROM mcr.microsoft.com/azurelinux-beta/base/core:4.0
 
-RUN tdnf update -y && \
-    tdnf install -y \
+RUN dnf update -y && \
+    dnf install -y \
         # Common dependencies
         ca-certificates \
         git \
         tar \
         util-linux \
-        wget \
+        wget2-wget \
+        xz \
         shadow-utils \
         # Runtime dependencies
         icu

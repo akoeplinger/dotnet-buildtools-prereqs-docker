@@ -1,19 +1,21 @@
-FROM mcr.microsoft.com/azurelinux/base/core:3.0
+FROM mcr.microsoft.com/azurelinux-beta/base/core:4.0
 
 ARG PIP_INDEX_URL
 ENV PIP_INDEX_URL=${PIP_INDEX_URL}
 
-RUN tdnf update -y && \
-    tdnf install -y \
+RUN dnf update -y && \
+    dnf install -y \
         # Common utilities
         ca-certificates \
         git \
+        gnupg2 \
         jq \
         gzip \
         shadow-utils \
         tar \
         unzip \
-        wget \
+        wget2-wget \
+        xz \
         # LLVM build dependencies
         binutils \
         clang \
@@ -24,27 +26,28 @@ RUN tdnf update -y && \
         glibc-devel \
         kernel-headers \
         texinfo \
-        zlib-devel \
+        zlib-ng-compat-devel \
         # Rootfs build dependencies
         bzip2-devel \
         libarchive-devel \
         openssl-devel \
-        python3
+        python3 \
+    && dnf clean all
 
 ENV ROOTFS_PIP_HOME=/usr/local/share/rootfs
 
 COPY <<ROOTFS_PIP_REQUIREMENTS /tmp/rootfs-pip-requirements.txt
 aiohappyeyeballs==2.6.2 --hash=sha256:4708045e2d7a6c6bdf8aafa8ed39649eaf926a4543b54560659129e3365953c4
-aiohttp==3.13.5 --hash=sha256:b18f31b80d5a33661e08c89e202edabf1986e9b49c42b4504371daeaa11b47c1
+aiohttp==3.13.5 --hash=sha256:241a94f7de7c0c3b616627aaad530fe2cb620084a8b144d3be7b6ecfe95bae3b
 aiosignal==1.4.0 --hash=sha256:053243f8b92b990551949e63930a839ff0cf0b0ebbe0597b0f3fb19e1a0fe82e
 attrs==26.1.0 --hash=sha256:c647aa4a12dfbad9333ca4e71fe62ddc36f4e63b2d260a37a8b83d2f043ac309
-frozenlist==1.8.0 --hash=sha256:0c18a16eab41e82c295618a77502e17b195883241c563b00f0aa5106fc4eaa0d
+frozenlist==1.8.0 --hash=sha256:cba69cb73723c3f329622e34bdbf5ce1f80c21c290ff04256cff1cd3c2036ed2
 idna==3.15 --hash=sha256:048adeaf8c2d788c40fee287673ccaa74c24ffd8dcf09ffa555a2fbb59f10ac8
-multidict==6.7.1 --hash=sha256:bfde23ef6ed9db7eaee6c37dcec08524cb43903c60b285b172b6c094711b3961
-propcache==0.5.2 --hash=sha256:6f328175a2cde1f0ff2c4ed8ce968b9dcfb55f3a7153f39e2957ed994da13476
+multidict==6.7.1 --hash=sha256:7eee46ccb30ff48a1e35bb818cc90846c6be2b68240e42a78599166722cea709
+propcache==0.5.2 --hash=sha256:e00820e192c8dbebcafb383ebbf99030895f09905e7a0eb2e0340a0bcc2bc825
 typing-extensions==4.15.0 --hash=sha256:f0fa19c6845758ab08074a0cfa8b7aecb71c999ca73d62883bc25cc018c4e548
-yarl==1.24.2 --hash=sha256:7e7ebcdef69dec6c6451e616f32b622a6d4a2e92b445c992f7c8e5274a6bbc4c
-zstandard==0.25.0 --hash=sha256:5a56ba0db2d244117ed744dfa8f6f5b366e14148e00de44723413b2f3938a902
+yarl==1.24.2 --hash=sha256:e51b2cf5ec89a8b8470177641ed62a3ba22d74e1e898e06ad53aa77972487208
+zstandard==0.25.0 --hash=sha256:e09bb6252b6476d8d56100e8147b803befa9a12cea144bbe629dd508800d1ad0
 ROOTFS_PIP_REQUIREMENTS
 
 RUN python3 -m venv "$ROOTFS_PIP_HOME" && \
